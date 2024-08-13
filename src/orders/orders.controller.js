@@ -58,7 +58,8 @@ function dishesAreValidArray(req, res, next) {
 
 function statusIsValid(req, res, next) {
   const { data: { status } = {} } = req.body;
-  if (!status) {
+  const validStatuses = ["pending", "preparing", "out-for-delivery", "delivered"];
+  if (!status || !validStatuses.includes(status)) {
     return next({
       status: 400,
       message: `Order must have a status of pending, preparing, out-for-delivery, delivered`,
