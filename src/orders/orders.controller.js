@@ -58,7 +58,12 @@ function dishesAreValidArray(req, res, next) {
 
 function statusIsValid(req, res, next) {
   const { data: { status } = {} } = req.body;
-  const validStatuses = ["pending", "preparing", "out-for-delivery", "delivered"];
+  const validStatuses = [
+    "pending",
+    "preparing",
+    "out-for-delivery",
+    "delivered",
+  ];
   if (!status || !validStatuses.includes(status)) {
     return next({
       status: 400,
@@ -120,8 +125,7 @@ function read(req, res) {
 
 function update(req, res) {
   const order = res.locals.order;
-  const { data: { id, deliverTo, mobileNumber, status, dishes } = {} } =
-    req.body;
+  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
   order.deliverTo = deliverTo;
   order.mobileNumber = mobileNumber;
   order.status = status;

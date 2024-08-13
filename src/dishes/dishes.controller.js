@@ -77,7 +77,7 @@ function read(req, res) {
 
 function update(req, res) {
   const dish = res.locals.dish;
-  const { data: { id, name, description, price, image_url } = {} } = req.body;
+  const { data: { name, description, price, image_url } = {} } = req.body;
   dish.name = name;
   dish.description = description;
   dish.price = price;
