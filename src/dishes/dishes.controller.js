@@ -6,7 +6,7 @@ const dishes = require(path.resolve("src/data/dishes-data"));
 // Use this function to assign ID's when necessary
 const nextId = require("../utils/nextId");
 
-// TODO: Implement the /dishes handlers needed to make the tests pass
+// /dishes handlers
 
 function dishExists(req, res, next) {
   const { dishId } = req.params;
@@ -45,7 +45,7 @@ function priceIsValidNumber(req, res, next) {
 function idMatchesDishId(req, res, next) {
   const { dishId } = req.params;
   const { data: { id } = {} } = req.body;
-  if (id && id != dishId) {
+  if (id && id !== dishId) {
     return next({
       status: 400,
       message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}`,
@@ -86,13 +86,6 @@ function update(req, res) {
   res.json({ data: dish });
 }
 
-function destroy(req, res) {
-  const { useId } = req.params;
-  const index = uses.findIndex((use) => use.id === Number(useId));
-  uses.splice(index, 1);
-  res.sendStatus(204);
-}
-
 module.exports = {
   list,
   read: [dishExists, read],
@@ -114,5 +107,4 @@ module.exports = {
     idMatchesDishId,
     update,
   ],
-  delete: [dishExists, destroy],
 };
