@@ -8,11 +8,11 @@ const nextId = require("../utils/nextId");
 
 // /orders handlers
 
-function orderExists(req, res, next) {
-  const { orderId } = req.params;
+function orderExists(request, response, next) {
+  const { orderId } = request.params;
   const foundOrder = orders.find((order) => order.id === orderId);
   if (foundOrder) {
-    res.locals.order = foundOrder;
+    response.locals.order = foundOrder;
     return next();
   }
   next({
@@ -22,8 +22,8 @@ function orderExists(req, res, next) {
 }
 
 function bodyDataHas(propertyName) {
-  return function (req, res, next) {
-    const { data = {} } = req.body;
+  return function (request, response, next) {
+    const { data = {} } = request.body;
     if (data[propertyName]) {
       return next();
     }
@@ -31,8 +31,8 @@ function bodyDataHas(propertyName) {
   };
 }
 
-function quantityIsValidNumber(req, res, next) {
-  const { data: { dishes } = {} } = req.body;
+function quantityIsValidNumber(request, response, next) {
+  const { data: { dishes } = {} } = request.body;
   for (let [index, dish] of dishes.entries()) {
     if (!Number.isInteger(dish.quantity) || dish.quantity <= 0) {
       return next({
@@ -45,8 +45,8 @@ function quantityIsValidNumber(req, res, next) {
   next();
 }
 
-function dishesAreValidArray(req, res, next) {
-  const { data: { dishes } = {} } = req.body;
+function dishesAreValidArray(request, response, next) {
+  const { data: { dishes } = {} } = request.body;
   if (!Array.isArray(dishes) || dishes.length < 1) {
     return next({
       status: 400,
@@ -56,8 +56,8 @@ function dishesAreValidArray(req, res, next) {
   next();
 }
 
-function statusIsValid(req, res, next) {
-  const { data: { status } = {} } = req.body;
+function statusIsValid(request, response, next) {
+  const { data: { status } = {} } = request.body;
   const validStatuses = [
     "pending",
     "preparing",
@@ -79,8 +79,8 @@ function statusIsValid(req, res, next) {
   next();
 }
 
-function statusCanBeDeleted(req, res, next) {
-  const order = res.locals.order;
+function statusCanBeDeleted(request, response, next) {
+  const order = response.locals.order;
   if (order.status !== "pending") {
     return next({
       status: 400,
@@ -90,9 +90,9 @@ function statusCanBeDeleted(req, res, next) {
   next();
 }
 
-function idMatchesOrderId(req, res, next) {
-  const { orderId } = req.params;
-  const { data: { id } = {} } = req.body;
+function idMatchesOrderId(request, response, next) {
+  const { orderId } = request.params;
+  const { data: { id } = {} } = request.body;
   if (id && id != orderId) {
     return next({
       status: 400,
@@ -102,12 +102,12 @@ function idMatchesOrderId(req, res, next) {
   next();
 }
 
-function list(req, res) {
-  res.json({ data: orders });
+function list(request, response) {
+  response.json({ data: orders });
 }
 
-function create(req, res) {
-  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+function create(request, response) {
+  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = request.body;
   const newOrder = {
     id: nextId(),
     deliverTo,
@@ -116,29 +116,29 @@ function create(req, res) {
     dishes,
   };
   orders.push(newOrder);
-  res.status(201).json({ data: newOrder });
+  response.status(201).json({ data: newOrder });
 }
 
-function read(req, res) {
-  res.json({ data: res.locals.order });
+function read(request, response) {
+  response.json({ data: response.locals.order });
 }
 
-function update(req, res) {
-  const order = res.locals.order;
-  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = req.body;
+function update(request, response) {
+  const order = response.locals.order;
+  const { data: { deliverTo, mobileNumber, status, dishes } = {} } = request.body;
   order.deliverTo = deliverTo;
   order.mobileNumber = mobileNumber;
   order.status = status;
   order.dishes = dishes;
 
-  res.json({ data: order });
+  response.json({ data: order });
 }
 
-function destroy(req, res) {
-  const { orderId } = req.params;
+function destroy(request, response) {
+  const { orderId } = request.params;
   const index = orders.findIndex((order) => order.id === orderId);
   orders.splice(index, 1);
-  res.sendStatus(204);
+  response.sendStatus(204);
 }
 
 module.exports = {
